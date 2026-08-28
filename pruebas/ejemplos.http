@@ -1,0 +1,30 @@
+### Salud (sin token)
+GET http://localhost:8090/externo/salud
+
+### Listar citas por cédula
+GET http://localhost:8090/externo/citas?cedula=C0104824693
+X-Externo-Token: token-local-de-prueba
+
+### Agendar (SIMULADO)
+POST http://localhost:8090/externo/citas?simular=true
+X-Externo-Token: token-local-de-prueba
+Content-Type: application/json
+
+{"cita_hospital": 22913, "paciente": "PACIENTE DE PRUEBA EXTERNO", "cedula": "C0999999990",
+ "celular": "0999999990", "especialidad": "E59", "nombre_especialidad": "Medicina Interna",
+ "id_medico": 251, "nombre_medico": "MARTINEZ TORRES PAUL SANTIAGO",
+ "fecha_aten": "2026-09-01T11:00:00", "empresa": 27, "usuario": "Counter 2301"}
+
+### Reagendar (SIMULADO)
+PUT http://localhost:8090/externo/citas?simular=true
+X-Externo-Token: token-local-de-prueba
+Content-Type: application/json
+
+{"id_chatbot": 5290, "fecha_nueva": "2026-08-28T16:30:00", "usuario": "Counter 2301"}
+
+### Cancelar (SIMULADO)
+POST http://localhost:8090/externo/citas/cancelar?simular=true
+X-Externo-Token: token-local-de-prueba
+Content-Type: application/json
+
+{"id_chatbot": 5290, "motivo": "Paciente llamó al call center", "usuario": "Counter 2301"}

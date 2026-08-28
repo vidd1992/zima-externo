@@ -1,0 +1,11 @@
+# Zima-Externo — imagen para AWS Lambda (mismo patrón que el bot: Lambda Web Adapter).
+FROM python:3.11-slim
+COPY --from=public.ecr.aws/awsguru/aws-lambda-adapter:0.9.0 /lambda-adapter /opt/extensions/lambda-adapter
+ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 PIP_NO_CACHE_DIR=1 \
+    AWS_LWA_PORT=8080 AWS_LWA_READINESS_CHECK_PATH=/externo/salud
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY app ./app
+EXPOSE 8080
+CMD exec uvicorn app.main:app --host 0.0.0.0 --port 8080

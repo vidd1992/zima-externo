@@ -1,0 +1,76 @@
+{
+  "comentario": "Fuente ÚNICA de los ejemplos: de aquí se genera el Word del contrato Y se ejecutan las pruebas de validación. Si un ejemplo cambia, doc y pruebas cambian juntos.",
+  "ejemplos": [
+    {
+      "titulo": "1. Registrar una cita agendada en su sistema",
+      "metodo": "POST", "ruta": "/externo/citas",
+      "cuerpo": {
+        "cita_hospital": 90501,
+        "paciente": "MARIA FERNANDA EJEMPLO RODAS",
+        "cedula": "C0102030405",
+        "celular": "0991112233",
+        "email": "paciente@correo.com",
+        "especialidad": "E59",
+        "nombre_especialidad": "Medicina Interna",
+        "id_medico": 251,
+        "nombre_medico": "MARTINEZ TORRES PAUL SANTIAGO",
+        "fecha_aten": "2026-09-10T11:00:00",
+        "empresa": 27,
+        "usuario": "Counter 2301",
+        "recordatorios": false
+      },
+      "respuesta_esperada": {"ok": true, "id_chatbot": "<número — GUÁRDENLO en su columna idChatbot>"},
+      "nota": "Idempotente: si reenvían el mismo cita_hospital, no se duplica — reciben el mismo id_chatbot."
+    },
+    {
+      "titulo": "2. Reagendar una cita",
+      "metodo": "PUT", "ruta": "/externo/citas",
+      "cuerpo": {
+        "id_chatbot": "<el id que les devolvimos, o el idChatbot que ya tienen>",
+        "fecha_nueva": "2026-09-12T15:30:00",
+        "usuario": "Counter 2301",
+        "notificar": false
+      },
+      "respuesta_esperada": {"ok": true, "fecha": "2026-09-12", "hora": "15:30"},
+      "nota": "Con \"notificar\": true, el paciente recibe por WhatsApp la confirmación con la fecha nueva."
+    },
+    {
+      "titulo": "3. Cancelar una cita",
+      "metodo": "POST", "ruta": "/externo/citas/cancelar",
+      "cuerpo": {
+        "id_chatbot": "<id de la cita>",
+        "motivo": "El médico no atenderá ese día",
+        "usuario": "Counter 2301",
+        "notificar": false
+      },
+      "respuesta_esperada": {"ok": true, "estado": "cancelada"},
+      "nota": "Idempotente: cancelar dos veces no es error."
+    },
+    {
+      "titulo": "4. Listar citas (consulta)",
+      "metodo": "GET", "ruta": "/externo/citas?cedula=C0102030405",
+      "cuerpo": null,
+      "respuesta_esperada": {"ok": true, "total": "<n>", "citas": "[...]"},
+      "nota": "Filtros combinables: cedula, celular, fecha (YYYY-MM-DD), estado, origen, limite."
+    },
+    {
+      "titulo": "5. Error bien explicado (cédula sin prefijo)",
+      "metodo": "POST", "ruta": "/externo/citas",
+      "cuerpo": {"cita_hospital": 90502, "paciente": "EJEMPLO MAL ARMADO", "cedula": "0102030405",
+                 "celular": "0991112233", "especialidad": "E59", "id_medico": 251,
+                 "fecha_aten": "2026-09-10T11:00:00", "empresa": 27, "usuario": "Counter 2301"},
+      "respuesta_esperada": {"http": 422, "detalle": "cédula ... debe llevar prefijo de tipo, ej. C0102030405"},
+      "nota": "Toda petición mal formada recibe 422 con el campo exacto y el porqué."
+    },
+    {
+      "titulo": "6. Modo de prueba (simular)",
+      "metodo": "POST", "ruta": "/externo/citas?simular=true",
+      "cuerpo": {"cita_hospital": 90503, "paciente": "PRUEBA DE INTEGRACION SEGURA",
+                 "cedula": "C0908070605", "celular": "0990000001", "especialidad": "E26",
+                 "id_medico": 213, "fecha_aten": "2026-09-15T14:10:00", "empresa": 6,
+                 "usuario": "Dev Hospital"},
+      "respuesta_esperada": {"ok": true, "simulado": true},
+      "nota": "Con ?simular=true en cualquier escritura: validamos todo y respondemos qué haríamos, SIN guardar nada. Ideal para su integración."
+    }
+  ]
+}
